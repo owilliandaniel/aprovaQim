@@ -1,0 +1,17 @@
+import { AppShell } from "@/components/app-shell";
+import type { NavItem } from "@/components/nav-links";
+
+const nav: NavItem[] = [
+  { href: "/cliente", label: "Conteúdos", icon: "home" },
+  { href: "/cliente/calendario", label: "Calendário", icon: "calendar" },
+  { href: "/cliente/biblioteca", label: "Biblioteca", icon: "library" },
+  { href: "/cliente/comentarios", label: "Comentários", icon: "comments" },
+];
+
+export default function ClientLayout({ children }: LayoutProps<"/cliente">) {
+  return (
+    <AppShell root="/cliente" nav={nav} showHelp>
+      {children}
+    </AppShell>
+  );
+}

@@ -1,0 +1,37 @@
+import { LogOut } from "lucide-react";
+import { getCurrentUser } from "@/lib/auth";
+import { signOut } from "@/lib/auth-actions";
+
+// Avatar, name and logout button for the signed-in user.
+export async function UserMenu() {
+  const user = await getCurrentUser();
+  const name = user.role === "client" ? (user.clientName ?? user.email) : user.fullName || user.email;
+
+  return (
+    <div className="flex items-center gap-3">
+      <span className="grid size-10 place-items-center rounded-full bg-[#e8def7] text-[15px] font-bold text-brand">
+        {name.charAt(0).toUpperCase()}
+      </span>
+      <span className="hidden max-w-48 truncate text-[13px] sm:block">{name}</span>
+      <form action={signOut}>
+        <button
+          type="submit"
+          title="Sair"
+          aria-label="Sair"
+          className="grid size-9 place-items-center rounded-lg text-muted hover:bg-pale hover:text-brand"
+        >
+          <LogOut size={18} />
+        </button>
+      </form>
+    </div>
+  );
+}
+
+export function UserMenuSkeleton() {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="size-10 animate-pulse rounded-full bg-line" />
+      <span className="hidden h-3 w-28 animate-pulse rounded bg-line sm:block" />
+    </div>
+  );
+}

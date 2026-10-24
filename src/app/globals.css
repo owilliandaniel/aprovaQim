@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+/* Design tokens from the AprovaQim reference screen. */
+@theme {
+  --color-brand: #54218a;
+  --color-brand-2: #6f35b5;
+  --color-brand-dark: #3f126d;
+  --color-ink: #180e2e;
+  --color-muted: #756b91;
+  --color-line: #e9e2f3;
+  --color-pale: #f5f1fb;
+  --color-canvas: #f5f2fa;
+  --color-panel: #f9f7fd;
+  --color-chip: #eee5fa;
+  --color-ok: #176b5a;
+  --color-ok-bg: #e2f3ee;
+  --color-warn: #8a5a00;
+  --color-warn-bg: #fdf1dc;
+  --color-danger: #b42318;
+  --color-danger-bg: #fdecea;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid #9a6cdb;
+  outline-offset: 3px;
+}
