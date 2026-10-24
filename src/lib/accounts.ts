@@ -32,7 +32,7 @@ type NewAccount = {
   clientId?: string;
 };
 
-// Creates a confirmed login; the database trigger creates the profile from app_metadata.
+// Creates a confirmed login and its profile (the trigger also does it; this doesn't depend on its timing).
 export async function createAccount(account: NewAccount): Promise<{ userId: string } | { error: string }> {
   const admin = createAdminClient();
   const { data, error } = await admin.auth.admin.createUser({
@@ -43,6 +43,21 @@ export async function createAccount(account: NewAccount): Promise<{ userId: stri
     user_metadata: { full_name: account.fullName },
   });
   if (error || !data.user) return { error: accountErrorMessage(error ?? { message: "" }) };
+
+  const { error: profileError } = await admin.from("profiles").upsert(
+    {
+      id: data.user.id,
+      role: account.role,
+      client_id: account.clientId ?? null,
+      full_name: account.fullName,
+      email: account.email,
+    },
+    { onConflict: "id", ignoreDuplicates: true },
+  );
+  if (profileError) {
+    await admin.auth.admin.deleteUser(data.user.id);
+    return { error: "Não foi possível criar o acesso. Tente novamente." };
+  }
   return { userId: data.user.id };
 }
 
