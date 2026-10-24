@@ -31,6 +31,9 @@ export async function updateSession(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isLoginPage = path === "/login";
 
+  // Auth routes (like sign-out) handle their own redirects.
+  if (path.startsWith("/auth/")) return response;
+
   // Redirects while keeping any refreshed auth cookies.
   const redirectTo = (target: string) => {
     const redirect = NextResponse.redirect(new URL(target, request.url));

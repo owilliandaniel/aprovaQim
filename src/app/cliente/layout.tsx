@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/app-shell";
-import type { NavItem } from "@/components/nav-links";
+import type { NavItem } from "@/components/nav-list";
 
 const nav: NavItem[] = [
   { href: "/cliente", label: "Conteúdos", icon: "home" },

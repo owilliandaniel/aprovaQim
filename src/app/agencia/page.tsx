@@ -1,13 +1,27 @@
 import { Suspense } from "react";
-import { PageHeader } from "@/components/page-header";
+import Link from "next/link";
+import { Plus } from "lucide-react";
 import { EmptyState } from "@/components/empty-state";
+import { PageHeader } from "@/components/page-header";
+import { StatusCountChips } from "@/components/status-counts";
+import { buttonPrimary, buttonSecondary, buttonSmall, cardClass } from "@/components/ui";
 import { requireRole } from "@/lib/auth";
+import { countByClient } from "@/lib/post-stats";
 import { createClient } from "@/lib/supabase/server";
 
 export default function AgencyDashboardPage() {
   return (
     <>
-      <PageHeader eyebrow="Painel" title="Visão geral" subtitle="Acompanhe as aprovações dos seus clientes." />
+      <PageHeader
+        eyebrow="Painel"
+        title="Visão geral"
+        subtitle="Acompanhe as aprovações dos seus clientes."
+        action={
+          <Link href="/agencia/conteudos/novo" className={buttonPrimary}>
+            <Plus size={18} /> Novo conteúdo
+          </Link>
+        }
+      />
       <Suspense fallback={<StatCardsSkeleton />}>
         <Overview />
       </Suspense>
@@ -15,37 +29,59 @@ export default function AgencyDashboardPage() {
   );
 }
 
-// Totals of clients and posts by status, across all clients.
+// Totals by status plus one row per client.
 async function Overview() {
   await requireRole("agency");
   const supabase = await createClient();
-  const [{ count: clientCount }, { data: posts }] = await Promise.all([
-    supabase.from("clients").select("*", { count: "exact", head: true }),
-    supabase.from("posts").select("status"),
+  const [{ data: clients }, { data: posts }] = await Promise.all([
+    supabase.from("clients").select("id, name").order("name"),
+    supabase.from("posts").select("client_id, status"),
   ]);
 
   const countBy = (status: string) => posts?.filter((post) => post.status === status).length ?? 0;
   const stats = [
-    { label: "Clientes", value: clientCount ?? 0 },
-    { label: "Aguardando aprovação", value: countBy("pending") },
-    { label: "Ajustes solicitados", value: countBy("changes_requested") },
-    { label: "Aprovados", value: countBy("approved") },
+    { label: "Clientes", value: clients?.length ?? 0, href: "/agencia/clientes" },
+    { label: "Aguardando aprovação", value: countBy("pending"), href: "/agencia/conteudos?status=pending" },
+    { label: "Ajustes solicitados", value: countBy("changes_requested"), href: "/agencia/conteudos?status=changes_requested" },
+    { label: "Aprovados", value: countBy("approved"), href: "/agencia/conteudos?status=approved" },
   ];
+  const counts = countByClient(posts ?? []);
 
   return (
     <div className="grid gap-5">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {stats.map((stat) => (
-          <div key={stat.label} className="rounded-2xl border border-line bg-white p-5">
+          <Link key={stat.label} href={stat.href} className={`${cardClass} p-5 transition hover:border-[#b88ce8]`}>
             <div className="text-muted">{stat.label}</div>
             <div className="mt-1 text-3xl font-extrabold tracking-tight">{stat.value}</div>
-          </div>
+          </Link>
         ))}
       </div>
-      {!clientCount && (
+
+      {!clients?.length ? (
         <EmptyState title="Nenhum cliente cadastrado">
-          Cadastre o primeiro cliente para começar a enviar conteúdos para aprovação.
+          <Link href="/agencia/clientes/novo" className="font-semibold text-brand underline">
+            Cadastre o primeiro cliente
+          </Link>{" "}
+          para começar a enviar conteúdos para aprovação.
         </EmptyState>
+      ) : (
+        <section className={`${cardClass} p-2`}>
+          <h2 className="px-3 pt-3 pb-2 font-bold">Por cliente</h2>
+          <ul className="divide-y divide-line">
+            {clients.map((client) => (
+              <li key={client.id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-3">
+                <span className="font-semibold">{client.name}</span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <StatusCountChips counts={counts.get(client.id)} />
+                  <Link href={`/agencia/conteudos?cliente=${client.id}`} className={`${buttonSecondary} ${buttonSmall}`}>
+                    Abrir
+                  </Link>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
     </div>
   );

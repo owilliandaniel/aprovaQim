@@ -14,35 +14,49 @@ export type CurrentUser = {
   clientName: string | null;
 };
 
-// Reads the signed-in user and profile once per request; sends to /login when missing.
-export const getCurrentUser = cache(async (): Promise<CurrentUser> => {
-  // Session checks compare token expiry with the clock, so only run at request time.
-  await connection();
+// Reads the session and profile; null when signed out or without a profile.
+async function loadUser(): Promise<CurrentUser | null> {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
-  if (!claims) redirect("/login");
+  if (!claims) return null;
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, full_name, client_id, clients(name)")
+    .select("role, full_name, email, client_id, clients(name)")
     .eq("id", claims.sub)
     .single();
-  if (!profile) redirect("/login");
+  if (!profile) return null;
 
   return {
     id: claims.sub,
-    email: claims.email ?? "",
+    email: profile.email || claims.email || "",
     role: profile.role,
     fullName: profile.full_name,
     clientId: profile.client_id,
     clientName: profile.clients?.name ?? null,
   };
+}
+
+// For pages: reads the user once per request; signs out accounts that lost access.
+export const getCurrentUser = cache(async (): Promise<CurrentUser> => {
+  // Session checks compare token expiry with the clock, so only run at request time.
+  await connection();
+  const user = await loadUser();
+  if (!user) redirect("/auth/sair");
+  return user;
 });
 
 // Same as getCurrentUser, but only lets the given role through.
 export async function requireRole(role: UserRole) {
   const user = await getCurrentUser();
   if (user.role !== role) redirect(homePathFor(user.role));
+  return user;
+}
+
+// For Server Actions: returns the agency user or throws.
+export async function requireAgencyAction() {
+  const user = await loadUser();
+  if (user?.role !== "agency") throw new Error("Acesso negado.");
   return user;
 }

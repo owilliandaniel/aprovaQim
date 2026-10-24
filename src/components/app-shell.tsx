@@ -1,7 +1,8 @@
 import { Suspense, type ReactNode } from "react";
 import { Bell, CircleHelp } from "lucide-react";
 import { Brand } from "@/components/brand";
-import { NavLinks, type NavItem } from "@/components/nav-links";
+import { NavLinks } from "@/components/nav-links";
+import { NavList, type NavItem } from "@/components/nav-list";
 import { UserMenu, UserMenuSkeleton } from "@/components/user-menu";
 
 type AppShellProps = {
@@ -17,7 +18,10 @@ export function AppShell({ root, nav, showHelp = false, children }: AppShellProp
     <div className="min-h-screen md:grid md:grid-cols-[214px_minmax(0,1fr)]">
       <aside className="border-b border-[#eee8f5] bg-panel px-4 py-3 md:fixed md:inset-y-0 md:left-0 md:flex md:w-[214px] md:flex-col md:border-b-0 md:border-r md:px-3 md:pt-7 md:pb-5">
         <Brand className="mx-1 mb-3 text-[22px] md:mx-3 md:mb-8 md:text-[26px]" />
-        <NavLinks items={nav} root={root} />
+        {/* Pages with URL params only know the path at request time. */}
+        <Suspense fallback={<NavList items={nav} activeHref={null} />}>
+          <NavLinks items={nav} root={root} />
+        </Suspense>
         {showHelp && (
           <div className="mt-auto hidden items-center gap-3 px-4 py-3 text-xs leading-normal md:flex">
             <CircleHelp size={20} className="text-brand" />
