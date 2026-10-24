@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { buttonPrimary, inputClass } from "@/components/ui";
 import { signIn, type SignInState } from "@/lib/auth-actions";
 
 const initialState: SignInState = { error: null };
@@ -17,7 +18,7 @@ export function LoginForm() {
           type="email"
           autoComplete="email"
           required
-          className="rounded-lg border border-line px-3 py-2.5 outline-brand-2"
+          className={inputClass}
         />
       </label>
       <label className="grid gap-1.5">
@@ -27,7 +28,7 @@ export function LoginForm() {
           type="password"
           autoComplete="current-password"
           required
-          className="rounded-lg border border-line px-3 py-2.5 outline-brand-2"
+          className={inputClass}
         />
       </label>
 
@@ -40,7 +41,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={pending}
-        className="mt-1 rounded-lg bg-brand px-4 py-2.5 font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
+        className={`${buttonPrimary} mt-1`}
       >
         {pending ? "Entrando..." : "Entrar"}
       </button>

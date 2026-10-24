@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -10,6 +10,12 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "AprovaQim",
   description: "Aprovação de conteúdos entre a agência e seus clientes.",
+};
+
+// Draw under the iPhone notch/home bar (bars use safe-area padding) and tint the browser UI.
+export const viewport: Viewport = {
+  viewportFit: "cover",
+  themeColor: "#faf8fd",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -203,7 +203,7 @@ export function PostEditor({ clients, post, defaultClientId }: {
                   type="button"
                   aria-pressed={type === option}
                   onClick={() => setType(option)}
-                  className={`rounded-lg px-3 py-2 font-semibold ${
+                  className={`min-h-11 rounded-lg px-3 py-2 font-semibold sm:min-h-0 ${
                     type === option ? "bg-brand-dark text-white" : "bg-[#eee9f6] text-[#655a7f] hover:bg-chip"
                   }`}
                 >
@@ -254,15 +254,15 @@ export function PostEditor({ clients, post, defaultClientId }: {
                   <span className="absolute top-1.5 left-1.5 rounded bg-black/60 px-1.5 text-xs font-semibold text-white">
                     {index + 1}
                   </span>
-                  <div className="flex items-center justify-between bg-white px-1 py-1">
-                    <button type="button" aria-label="Mover para a esquerda" onClick={() => move(index, -1)} disabled={index === 0} className="rounded p-1 text-muted hover:bg-pale disabled:opacity-30">
-                      <ChevronLeft size={16} />
+                  <div className="grid grid-cols-3 bg-white">
+                    <button type="button" aria-label="Mover para a esquerda" onClick={() => move(index, -1)} disabled={index === 0} className="grid min-h-11 place-items-center text-muted hover:bg-pale disabled:opacity-30 sm:min-h-9">
+                      <ChevronLeft size={18} />
                     </button>
-                    <button type="button" aria-label="Remover mídia" onClick={() => remove(index)} className="rounded p-1 text-danger hover:bg-danger-bg">
-                      <X size={16} />
+                    <button type="button" aria-label="Remover mídia" onClick={() => remove(index)} className="grid min-h-11 place-items-center text-danger hover:bg-danger-bg sm:min-h-9">
+                      <X size={18} />
                     </button>
-                    <button type="button" aria-label="Mover para a direita" onClick={() => move(index, 1)} disabled={index === items.length - 1} className="rounded p-1 text-muted hover:bg-pale disabled:opacity-30">
-                      <ChevronRight size={16} />
+                    <button type="button" aria-label="Mover para a direita" onClick={() => move(index, 1)} disabled={index === items.length - 1} className="grid min-h-11 place-items-center text-muted hover:bg-pale disabled:opacity-30 sm:min-h-9">
+                      <ChevronRight size={18} />
                     </button>
                   </div>
                 </li>
@@ -309,13 +309,21 @@ export function PostEditor({ clients, post, defaultClientId }: {
 
       <FormMessage error={error} />
 
-      <div className="flex flex-wrap justify-end gap-2">
-        <button type="button" onClick={() => submit(false)} disabled={busy !== null} className={buttonSecondary}>
+      {/* On phones the actions stay pinned to the bottom of the screen. */}
+      <div className="sticky bottom-0 z-10 -mx-4 flex gap-2 border-t border-line bg-canvas/95 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur md:static md:mx-0 md:justify-end md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none">
+        <button type="button" onClick={() => submit(false)} disabled={busy !== null} className={`${buttonSecondary} flex-1 md:flex-none`}>
           {busy === "save" ? "Salvando..." : canSend ? "Salvar rascunho" : "Salvar alterações"}
         </button>
         {canSend && (
-          <button type="button" onClick={() => submit(true)} disabled={busy !== null} className={buttonPrimary}>
-            {busy === "send" ? "Enviando..." : status === "draft" ? "Salvar e enviar para aprovação" : "Salvar e reenviar"}
+          <button type="button" onClick={() => submit(true)} disabled={busy !== null} className={`${buttonPrimary} flex-1 md:flex-none`}>
+            {busy === "send" ? "Enviando..." : status === "draft" ? (
+              <>
+                <span className="md:hidden">Salvar e enviar</span>
+                <span className="hidden md:inline">Salvar e enviar para aprovação</span>
+              </>
+            ) : (
+              "Salvar e reenviar"
+            )}
           </button>
         )}
       </div>

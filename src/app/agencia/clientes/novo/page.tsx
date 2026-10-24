@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { BackLink } from "@/components/back-link";
 import { FreshOnNavigate } from "@/components/fresh-on-navigate";
 import { PageHeader } from "@/components/page-header";
 import { cardClass } from "@/components/ui";
@@ -9,9 +8,7 @@ import { NewClientForm } from "./new-client-form";
 export default function NewClientPage() {
   return (
     <>
-      <Link href="/agencia/clientes" className="mb-4 inline-flex items-center gap-2 text-[13px] text-[#4b2580]">
-        <ArrowLeft size={16} /> Voltar para clientes
-      </Link>
+      <BackLink href="/agencia/clientes">Voltar para clientes</BackLink>
       <PageHeader
         eyebrow="Clientes"
         title="Novo cliente"

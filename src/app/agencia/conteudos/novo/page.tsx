@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { BackLink } from "@/components/back-link";
 import { EmptyState } from "@/components/empty-state";
 import { FreshOnNavigate } from "@/components/fresh-on-navigate";
 import { PageHeader } from "@/components/page-header";
@@ -13,9 +13,7 @@ import { PostEditor } from "../post-editor";
 export default function NewContentPage({ searchParams }: PageProps<"/agencia/conteudos/novo">) {
   return (
     <>
-      <Link href="/agencia/conteudos" className="mb-4 inline-flex items-center gap-2 text-[13px] text-[#4b2580]">
-        <ArrowLeft size={16} /> Voltar para os conteúdos
-      </Link>
+      <BackLink href="/agencia/conteudos">Voltar para os conteúdos</BackLink>
       <PageHeader eyebrow="Conteúdos" title="Novo conteúdo" subtitle="Monte o post e envie para o cliente aprovar." />
       <Suspense fallback={<ListSkeleton rows={3} />}>
         {searchParams.then(({ cliente }) => (

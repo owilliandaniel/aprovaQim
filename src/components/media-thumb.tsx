@@ -7,7 +7,7 @@ export type ThumbMedia = { kind: "image" | "video_link"; url: string } | null;
 export function MediaThumb({ media, className = "" }: { media: ThumbMedia; className?: string }) {
   return (
     <div
-      className={`relative aspect-[1/0.88] w-full overflow-hidden rounded-[9px] bg-gradient-to-br from-[#23132e] via-[#745091] to-[#d4b5d0] ${className}`}
+      className={`relative aspect-[1/0.68] w-full overflow-hidden min-[411px]:aspect-[1/0.88] rounded-[9px] bg-gradient-to-br from-[#23132e] via-[#745091] to-[#d4b5d0] ${className}`}
     >
       {media ? (
         <Image src={media.url} alt="" fill unoptimized sizes="400px" className="object-cover" />

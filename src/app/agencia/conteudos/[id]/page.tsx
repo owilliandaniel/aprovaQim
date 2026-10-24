@@ -1,7 +1,6 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { BackLink } from "@/components/back-link";
 import { StatusBadge } from "@/components/badges";
 import { FreshOnNavigate } from "@/components/fresh-on-navigate";
 import { PageHeader } from "@/components/page-header";
@@ -16,9 +15,7 @@ import { PostEditor, type EditorPost } from "../post-editor";
 export default function EditContentPage({ params }: PageProps<"/agencia/conteudos/[id]">) {
   return (
     <>
-      <Link href="/agencia/conteudos" className="mb-4 inline-flex items-center gap-2 text-[13px] text-[#4b2580]">
-        <ArrowLeft size={16} /> Voltar para os conteúdos
-      </Link>
+      <BackLink href="/agencia/conteudos">Voltar para os conteúdos</BackLink>
       <Suspense fallback={<ListSkeleton rows={3} />}>{params.then(({ id }) => <EditContent id={id} />)}</Suspense>
     </>
   );

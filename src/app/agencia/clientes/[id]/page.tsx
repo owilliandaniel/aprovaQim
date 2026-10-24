@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { addClientAccess } from "@/app/agencia/access-actions";
 import { AccessList } from "@/components/access/access-list";
 import { AddAccessForm } from "@/components/access/add-access-form";
+import { BackLink } from "@/components/back-link";
 import { FreshOnNavigate } from "@/components/fresh-on-navigate";
 import { PageHeader } from "@/components/page-header";
 import { ListSkeleton } from "@/components/skeletons";
@@ -18,9 +18,7 @@ import { DeleteClientForm, EditClientForm } from "./client-forms";
 export default function ClientDetailPage({ params }: PageProps<"/agencia/clientes/[id]">) {
   return (
     <>
-      <Link href="/agencia/clientes" className="mb-4 inline-flex items-center gap-2 text-[13px] text-[#4b2580]">
-        <ArrowLeft size={16} /> Voltar para clientes
-      </Link>
+      <BackLink href="/agencia/clientes">Voltar para clientes</BackLink>
       <Suspense fallback={<ListSkeleton />}>{params.then(({ id }) => <ClientDetail id={id} />)}</Suspense>
     </>
   );
@@ -66,7 +64,7 @@ async function ClientDetail({ id }: { id: string }) {
           </div>
           <AccessList accesses={accesses ?? []} />
           <details className="rounded-xl border border-line p-3">
-            <summary className="cursor-pointer font-semibold text-brand">Adicionar acesso</summary>
+            <summary className="flex min-h-11 cursor-pointer items-center font-semibold text-brand sm:min-h-0">Adicionar acesso</summary>
             <div className="mt-3">
               <AddAccessForm action={addClientAccess.bind(null, client.id)} />
             </div>

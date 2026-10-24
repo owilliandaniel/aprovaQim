@@ -21,7 +21,7 @@ export function CopyButton({ text, label = "Copiar" }: { text: string; label?: s
     <button
       type="button"
       onClick={copy}
-      className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-semibold text-brand hover:bg-pale"
+      className="inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 py-1 text-xs font-semibold text-brand hover:bg-pale sm:min-h-0"
     >
       {copied ? <Check size={14} /> : <Copy size={14} />}
       {copied ? "Copiado" : label}

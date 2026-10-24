@@ -94,28 +94,31 @@ async function ContentView({ filters }: { filters: ContentFilters }) {
   });
   const readyDrafts = cards.filter((card) => card.status === "draft" && !card.blockedReason).length;
 
+  const newHref = filters.client ? `/agencia/conteudos/novo?cliente=${filters.client}` : "/agencia/conteudos/novo";
+
   return (
     <div className="grid gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <FilterBar clients={clients} filters={filters} />
-        <div className="flex flex-wrap gap-2">
+        <div className="flex w-full flex-wrap gap-2 sm:w-auto">
           {filters.client && readyDrafts > 0 && (
-            <form action={sendDraftsAction.bind(null, filters.client, filters.month)}>
-              <SubmitButton className={buttonSecondary} pendingLabel="Enviando...">
+            <form action={sendDraftsAction.bind(null, filters.client, filters.month)} className="flex-1 sm:flex-none">
+              <SubmitButton className={`${buttonSecondary} w-full`} pendingLabel="Enviando...">
                 <Send size={16} /> Enviar {readyDrafts} {readyDrafts === 1 ? "rascunho" : "rascunhos"}
               </SubmitButton>
             </form>
           )}
-          <Link
-            href={filters.client ? `/agencia/conteudos/novo?cliente=${filters.client}` : "/agencia/conteudos/novo"}
-            className={buttonPrimary}
-          >
+          <Link href={newHref} className={`${buttonPrimary} flex-1 sm:flex-none`}>
             <Plus size={18} /> Novo conteúdo
           </Link>
         </div>
       </div>
 
-      <nav className="flex flex-wrap gap-2" aria-label="Status">
+      {/* One scrollable row on phones instead of wrapping into several lines. */}
+      <nav
+        className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:flex-wrap md:px-0"
+        aria-label="Status"
+      >
         {statusTabs.map((tab) => {
           const active = tab.status === filters.status;
           return (
@@ -123,7 +126,7 @@ async function ContentView({ filters }: { filters: ContentFilters }) {
               key={tab.label}
               href={contentHref({ ...filters, status: tab.status })}
               aria-current={active ? "page" : undefined}
-              className={`rounded-xl px-5 py-2.5 ${active ? "bg-brand-dark text-white" : "bg-[#eee9f6] text-[#655a7f] hover:bg-chip"}`}
+              className={`flex min-h-11 shrink-0 items-center rounded-xl px-4 md:px-5 ${active ? "bg-brand-dark text-white" : "bg-[#eee9f6] text-[#655a7f] hover:bg-chip"}`}
             >
               {tab.label}
             </Link>
@@ -136,7 +139,7 @@ async function ContentView({ filters }: { filters: ContentFilters }) {
           {filters.month ? `Nada em ${formatMonth(filters.month)} com esses filtros.` : "Crie o primeiro conteúdo para este filtro."}
         </EmptyState>
       ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 min-[411px]:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
           {cards.map((card) => (
             <PostCard key={card.id} post={card} />
           ))}
