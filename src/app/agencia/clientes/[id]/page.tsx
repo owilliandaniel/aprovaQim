@@ -5,6 +5,7 @@ import { addClientAccess } from "@/app/agencia/access-actions";
 import { AccessList } from "@/components/access/access-list";
 import { AddAccessForm } from "@/components/access/add-access-form";
 import { BackLink } from "@/components/back-link";
+import { InactiveBadge } from "@/components/client-status-badge";
 import { FreshOnNavigate } from "@/components/fresh-on-navigate";
 import { PageHeader } from "@/components/page-header";
 import { ListSkeleton } from "@/components/skeletons";
@@ -12,8 +13,8 @@ import { buttonSecondary, cardClass } from "@/components/ui";
 import { requireRole } from "@/lib/auth";
 import { isUuid } from "@/lib/ids";
 import { createClient } from "@/lib/supabase/server";
-import { deleteClient, updateClient } from "../actions";
-import { DeleteClientForm, EditClientForm } from "./client-forms";
+import { deleteClient, setClientActive, updateClient } from "../actions";
+import { ClientStatusForm, DeleteClientForm, EditClientForm } from "./client-forms";
 
 export default function ClientDetailPage({ params }: PageProps<"/agencia/clientes/[id]">) {
   return (
@@ -30,7 +31,7 @@ async function ClientDetail({ id }: { id: string }) {
 
   const supabase = await createClient();
   const [{ data: client }, { data: accesses }] = await Promise.all([
-    supabase.from("clients").select("id, name, instagram_handle").eq("id", id).maybeSingle(),
+    supabase.from("clients").select("id, name, instagram_handle, active").eq("id", id).maybeSingle(),
     supabase.from("profiles").select("id, email, full_name").eq("client_id", id).order("created_at"),
   ]);
   if (!client) notFound();
@@ -47,6 +48,11 @@ async function ClientDetail({ id }: { id: string }) {
           </Link>
         }
       />
+      {!client.active && (
+        <p className="mb-4 rounded-lg bg-warn-bg px-3 py-2 text-warn">
+          Cliente inativo: ninguém da empresa consegue entrar até você reativar.
+        </p>
+      )}
       <div className="grid items-start gap-4 lg:grid-cols-2">
         <section className={`${cardClass} grid gap-4 p-5`}>
           <h2 className="text-base font-bold">Dados da empresa</h2>
@@ -71,6 +77,18 @@ async function ClientDetail({ id }: { id: string }) {
           </details>
         </section>
       </div>
+
+      <section className={`${cardClass} mt-4 p-5`}>
+        <h2 className="flex items-center gap-2 text-base font-bold">
+          Acesso da empresa {!client.active && <InactiveBadge />}
+        </h2>
+        <p className="mt-1 mb-3 text-[13px] text-muted">
+          {client.active
+            ? "Ativo: as pessoas da empresa podem entrar e aprovar. Inativar bloqueia o login sem apagar nada."
+            : "Inativo: o login está bloqueado. Os conteúdos e acessos continuam guardados."}
+        </p>
+        <ClientStatusForm action={setClientActive.bind(null, client.id, !client.active)} name={client.name} active={client.active} />
+      </section>
 
       <section className="mt-4 rounded-2xl border border-danger/25 bg-white p-5">
         <h2 className="text-base font-bold text-danger">Excluir cliente</h2>

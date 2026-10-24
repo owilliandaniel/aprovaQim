@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { InactiveBadge } from "@/components/client-status-badge";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { ListSkeleton } from "@/components/skeletons";
@@ -34,7 +35,7 @@ async function ClientList() {
   await requireRole("agency");
   const supabase = await createClient();
   const [{ data: clients }, { data: accesses }, { data: posts }] = await Promise.all([
-    supabase.from("clients").select("id, name, instagram_handle").order("name"),
+    supabase.from("clients").select("id, name, instagram_handle, active").order("name"),
     supabase.from("profiles").select("client_id, email").eq("role", "client"),
     supabase.from("posts").select("client_id, status"),
   ]);
@@ -59,7 +60,10 @@ async function ClientList() {
                 {client.name.charAt(0).toUpperCase()}
               </span>
               <div className="min-w-0">
-                <div className="truncate font-bold">{client.name}</div>
+                <div className="flex items-center gap-2 font-bold">
+                  <span className="truncate">{client.name}</span>
+                  {!client.active && <InactiveBadge />}
+                </div>
                 <div className="truncate text-[13px] text-muted">
                   {[client.instagram_handle, emails.join(", ") || "sem acesso"].filter(Boolean).join(" · ")}
                 </div>

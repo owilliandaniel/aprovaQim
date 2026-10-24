@@ -47,7 +47,7 @@ const extensionFor = (mime: string) => (mime === "image/png" ? "png" : mime === 
 
 // Create/edit form: text fields, images uploaded straight to Storage, Drive video links.
 export function PostEditor({ clients, post, defaultClientId }: {
-  clients: { id: string; name: string }[];
+  clients: { id: string; name: string; active: boolean }[];
   post?: EditorPost;
   defaultClientId?: string;
 }) {
@@ -188,7 +188,7 @@ export function PostEditor({ clients, post, defaultClientId }: {
               <option value="">Escolha o cliente</option>
               {clients.map((client) => (
                 <option key={client.id} value={client.id}>
-                  {client.name}
+                  {client.active ? client.name : `${client.name} (inativo)`}
                 </option>
               ))}
             </select>

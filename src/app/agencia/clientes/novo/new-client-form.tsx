@@ -7,6 +7,7 @@ import { CredentialsCard } from "@/components/credentials-card";
 import { FormMessage } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 import { buttonPrimary, buttonSecondary, inputClass, labelClass, labelTextClass } from "@/components/ui";
+import { MIN_PASSWORD_LENGTH } from "@/lib/password-rules";
 
 export function NewClientForm() {
   const [formKey, setFormKey] = useState(0);
@@ -43,11 +44,11 @@ function Form({ onReset }: { onReset: () => void }) {
         <legend className="mb-1 font-bold">Empresa</legend>
         <label className={labelClass}>
           <span className={labelTextClass}>Nome da empresa</span>
-          <input name="name" required className={inputClass} />
+          <input name="name" required defaultValue={state.values?.name} className={inputClass} />
         </label>
         <label className={labelClass}>
           <span className={labelTextClass}>Instagram (opcional)</span>
-          <input name="instagram" placeholder="@empresa" className={inputClass} />
+          <input name="instagram" placeholder="@empresa" defaultValue={state.values?.instagram} className={inputClass} />
         </label>
       </fieldset>
 
@@ -55,15 +56,22 @@ function Form({ onReset }: { onReset: () => void }) {
         <legend className="mb-1 font-bold">Login do cliente</legend>
         <label className={labelClass}>
           <span className={labelTextClass}>Nome do contato (opcional)</span>
-          <input name="fullName" className={inputClass} />
+          <input name="fullName" defaultValue={state.values?.fullName} className={inputClass} />
         </label>
         <label className={labelClass}>
           <span className={labelTextClass}>E-mail de acesso</span>
-          <input name="email" type="email" required className={inputClass} />
+          <input name="email" type="email" required defaultValue={state.values?.email} className={inputClass} />
         </label>
         <label className={labelClass}>
           <span className={labelTextClass}>Senha</span>
-          <input name="password" type="text" minLength={8} placeholder="Deixe em branco para gerar" className={inputClass} />
+          <input
+            name="password"
+            type="text"
+            minLength={MIN_PASSWORD_LENGTH}
+            placeholder="Deixe em branco para gerar"
+            defaultValue={state.values?.password}
+            className={inputClass}
+          />
         </label>
       </fieldset>
 

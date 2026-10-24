@@ -6,6 +6,7 @@ import { CredentialsCard } from "@/components/credentials-card";
 import { FormMessage } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 import { buttonPrimary, buttonSecondary, inputClass, labelClass, labelTextClass } from "@/components/ui";
+import { MIN_PASSWORD_LENGTH } from "@/lib/password-rules";
 
 type Action = (prev: AccessFormState, formData: FormData) => Promise<AccessFormState>;
 
@@ -42,15 +43,22 @@ function AccessForm({ action, nameRequired, submitLabel, onReset }: {
     <form action={formAction} className="grid gap-3">
       <label className={labelClass}>
         <span className={labelTextClass}>Nome{nameRequired ? "" : " (opcional)"}</span>
-        <input name="fullName" required={nameRequired} className={inputClass} />
+        <input name="fullName" required={nameRequired} defaultValue={state.values?.fullName} className={inputClass} />
       </label>
       <label className={labelClass}>
         <span className={labelTextClass}>E-mail de acesso</span>
-        <input name="email" type="email" required className={inputClass} />
+        <input name="email" type="email" required defaultValue={state.values?.email} className={inputClass} />
       </label>
       <label className={labelClass}>
         <span className={labelTextClass}>Senha</span>
-        <input name="password" type="text" minLength={8} placeholder="Deixe em branco para gerar" className={inputClass} />
+        <input
+          name="password"
+          type="text"
+          minLength={MIN_PASSWORD_LENGTH}
+          placeholder="Deixe em branco para gerar"
+          defaultValue={state.values?.password}
+          className={inputClass}
+        />
       </label>
       <FormMessage error={state.error} />
       <SubmitButton className={buttonPrimary} pendingLabel="Criando...">

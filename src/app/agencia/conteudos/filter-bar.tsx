@@ -5,7 +5,7 @@ import { inputClass } from "@/components/ui";
 import { contentHref, type ContentFilters } from "./filters";
 
 // Client and month pickers (side by side on phones); changing one updates the URL.
-export function FilterBar({ clients, filters }: { clients: { id: string; name: string }[]; filters: ContentFilters }) {
+export function FilterBar({ clients, filters }: { clients: { id: string; name: string; active: boolean }[]; filters: ContentFilters }) {
   const router = useRouter();
   const update = (next: Partial<ContentFilters>) => router.push(contentHref({ ...filters, ...next }));
 
@@ -20,7 +20,7 @@ export function FilterBar({ clients, filters }: { clients: { id: string; name: s
         <option value="">Todos os clientes</option>
         {clients.map((client) => (
           <option key={client.id} value={client.id}>
-            {client.name}
+            {client.active ? client.name : `${client.name} (inativo)`}
           </option>
         ))}
       </select>

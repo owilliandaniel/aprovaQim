@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { InactiveBadge } from "@/components/client-status-badge";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { StatusCountChips } from "@/components/status-counts";
@@ -34,7 +35,7 @@ async function Overview() {
   await requireRole("agency");
   const supabase = await createClient();
   const [{ data: clients }, { data: posts }] = await Promise.all([
-    supabase.from("clients").select("id, name").order("name"),
+    supabase.from("clients").select("id, name, active").order("name"),
     supabase.from("posts").select("client_id, status"),
   ]);
 
@@ -71,7 +72,10 @@ async function Overview() {
           <ul className="divide-y divide-line">
             {clients.map((client) => (
               <li key={client.id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-3">
-                <span className="font-semibold">{client.name}</span>
+                <span className="flex items-center gap-2 font-semibold">
+                  {client.name}
+                  {!client.active && <InactiveBadge />}
+                </span>
                 <div className="flex flex-wrap items-center gap-2">
                   <StatusCountChips counts={counts.get(client.id)} />
                   <Link href={`/agencia/conteudos?cliente=${client.id}`} className={`${buttonSecondary} ${buttonSmall}`}>

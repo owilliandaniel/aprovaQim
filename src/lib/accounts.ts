@@ -1,10 +1,10 @@
 import "server-only";
 import { randomInt } from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { MIN_PASSWORD_LENGTH } from "@/lib/password-rules";
 import type { UserRole } from "@/lib/roles";
 
 const PASSWORD_CHARS = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-export const MIN_PASSWORD_LENGTH = 8;
 
 // Readable random password (no 0/O, 1/l/I).
 export function generatePassword(length = 12) {

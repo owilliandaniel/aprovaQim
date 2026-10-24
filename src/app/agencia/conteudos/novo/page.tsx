@@ -27,7 +27,7 @@ export default function NewContentPage({ searchParams }: PageProps<"/agencia/con
 async function NewContentEditor({ defaultClientId }: { defaultClientId?: string }) {
   await requireRole("agency");
   const supabase = await createClient();
-  const { data: clients } = await supabase.from("clients").select("id, name").order("name");
+  const { data: clients } = await supabase.from("clients").select("id, name, active").order("name");
 
   if (!clients?.length) {
     return (

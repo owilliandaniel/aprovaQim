@@ -12,6 +12,8 @@ export type CurrentUser = {
   fullName: string;
   clientId: string | null;
   clientName: string | null;
+  // False when the user's company was deactivated by the agency.
+  clientActive: boolean;
 };
 
 // Reads the session and profile; null when signed out or without a profile.
@@ -23,7 +25,7 @@ async function loadUser(): Promise<CurrentUser | null> {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, full_name, email, client_id, clients(name)")
+    .select("role, full_name, email, client_id, clients(name, active)")
     .eq("id", claims.sub)
     .single();
   if (!profile) return null;
@@ -35,6 +37,7 @@ async function loadUser(): Promise<CurrentUser | null> {
     fullName: profile.full_name,
     clientId: profile.client_id,
     clientName: profile.clients?.name ?? null,
+    clientActive: profile.role === "agency" || profile.clients?.active === true,
   };
 }
 
@@ -44,6 +47,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser> => {
   await connection();
   const user = await loadUser();
   if (!user) redirect("/auth/sair");
+  if (!user.clientActive) redirect("/auth/sair?motivo=suspenso");
   return user;
 });
 
@@ -51,6 +55,13 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser> => {
 export async function requireRole(role: UserRole) {
   const user = await getCurrentUser();
   if (user.role !== role) redirect(homePathFor(user.role));
+  return user;
+}
+
+// For Server Actions: returns the signed-in (active) user or throws.
+export async function requireUserAction() {
+  const user = await loadUser();
+  if (!user?.clientActive) throw new Error("Acesso negado.");
   return user;
 }
 

@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       clients: {
         Row: {
+          active: boolean
           created_at: string
           id: string
           instagram_handle: string | null
@@ -23,6 +24,7 @@ export type Database = {
           name: string
         }
         Insert: {
+          active?: boolean
           created_at?: string
           id?: string
           instagram_handle?: string | null
@@ -30,6 +32,7 @@ export type Database = {
           name: string
         }
         Update: {
+          active?: boolean
           created_at?: string
           id?: string
           instagram_handle?: string | null

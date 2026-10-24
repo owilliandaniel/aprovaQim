@@ -17,16 +17,47 @@ export function EditClientForm({ action, name, instagram }: {
     <form action={formAction} className="grid gap-3">
       <label className={labelClass}>
         <span className={labelTextClass}>Nome da empresa</span>
-        <input name="name" required defaultValue={name} className={inputClass} />
+        <input name="name" required defaultValue={state.values?.name ?? name} className={inputClass} />
       </label>
       <label className={labelClass}>
         <span className={labelTextClass}>Instagram</span>
-        <input name="instagram" defaultValue={instagram} placeholder="@empresa" className={inputClass} />
+        <input name="instagram" defaultValue={state.values?.instagram ?? instagram} placeholder="@empresa" className={inputClass} />
       </label>
       <FormMessage error={state.error} success={state.success} />
       <SubmitButton className={`${buttonPrimary} justify-self-start`} pendingLabel="Salvando...">
         Salvar
       </SubmitButton>
+    </form>
+  );
+}
+
+// Inactivate / reactivate button; the page re-renders with the new status.
+export function ClientStatusForm({ action, name, active }: {
+  action: (prev: AccessFormState) => Promise<AccessFormState>;
+  name: string;
+  active: boolean;
+}) {
+  const [state, formAction] = useActionState(action, {});
+  return (
+    <form action={formAction} className="grid gap-2">
+      {active ? (
+        <ConfirmButton
+          message={`Inativar ${name}? Ninguém da empresa vai conseguir entrar até você reativar. Os conteúdos ficam guardados.`}
+          className={`${buttonDanger} sm:justify-self-start`}
+          pendingLabel="Inativando..."
+        >
+          Inativar cliente
+        </ConfirmButton>
+      ) : (
+        <ConfirmButton
+          message={`Reativar ${name}? O acesso da empresa volta na hora.`}
+          className={`${buttonPrimary} sm:justify-self-start`}
+          pendingLabel="Reativando..."
+        >
+          Reativar cliente
+        </ConfirmButton>
+      )}
+      <FormMessage error={state.error} />
     </form>
   );
 }

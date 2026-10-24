@@ -36,7 +36,7 @@ async function EditContent({ id }: { id: string }) {
       .order("position", { referencedTable: "post_media" })
       .order("created_at", { referencedTable: "comments", ascending: false })
       .maybeSingle(),
-    supabase.from("clients").select("id, name").order("name"),
+    supabase.from("clients").select("id, name, active").order("name"),
   ]);
   if (!post) notFound();
 

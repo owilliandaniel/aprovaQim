@@ -58,7 +58,7 @@ async function ContentView({ filters }: { filters: ContentFilters }) {
   }
 
   const [{ data: clients }, { data: posts }] = await Promise.all([
-    supabase.from("clients").select("id, name").order("name"),
+    supabase.from("clients").select("id, name, active").order("name"),
     query,
   ]);
 

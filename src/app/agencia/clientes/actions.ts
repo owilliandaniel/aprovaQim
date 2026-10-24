@@ -13,17 +13,29 @@ export async function updateClient(clientId: string, _prev: AccessFormState, for
   await requireAgencyAction();
   const name = String(formData.get("name") ?? "").trim();
   const handle = String(formData.get("instagram") ?? "").trim().replace(/^@+/, "");
-  if (!name) return { error: "Informe o nome da empresa." };
+  const values = { name: String(formData.get("name") ?? ""), instagram: String(formData.get("instagram") ?? "") };
+  if (!name) return { error: "Informe o nome da empresa.", values };
 
   const supabase = await createClient();
   const { error } = await supabase
     .from("clients")
     .update({ name, instagram_handle: handle ? `@${handle}` : null })
     .eq("id", clientId);
-  if (error) return { error: "Não foi possível salvar." };
+  if (error) return { error: "Não foi possível salvar.", values };
 
   revalidatePath("/", "layout");
   return { success: "Dados salvos." };
+}
+
+// Blocks or restores a client's access; their logins and posts are kept.
+export async function setClientActive(clientId: string, active: boolean): Promise<AccessFormState> {
+  await requireAgencyAction();
+  const supabase = await createClient();
+  const { error } = await supabase.from("clients").update({ active }).eq("id", clientId);
+  if (error) return { error: "Não foi possível alterar o acesso do cliente." };
+
+  revalidatePath("/", "layout");
+  return {};
 }
 
 // Deletes the client's logins, media files and the client itself (posts go by cascade).

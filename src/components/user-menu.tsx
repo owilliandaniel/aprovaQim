@@ -1,21 +1,27 @@
+import Link from "next/link";
 import { LogOut } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { signOut } from "@/lib/auth-actions";
+import { homePathFor } from "@/lib/roles";
 
-// Avatar, name and logout button for the signed-in user.
+// Avatar + name (opens "Minha conta") and logout button for the signed-in user.
 export async function UserMenu() {
   const user = await getCurrentUser();
   const name = user.role === "client" ? (user.clientName ?? user.email) : user.fullName || user.email;
 
   return (
     <div className="flex items-center gap-1 md:gap-3">
-      <span
-        title={name}
-        className="grid size-9 place-items-center rounded-full bg-[#e8def7] text-[15px] font-bold text-brand md:size-10"
+      <Link
+        href={`${homePathFor(user.role)}/conta`}
+        title="Minha conta"
+        aria-label="Minha conta"
+        className="flex min-h-11 items-center gap-3 rounded-full pr-1 hover:bg-pale md:pr-3"
       >
-        {name.charAt(0).toUpperCase()}
-      </span>
-      <span className="hidden max-w-48 truncate text-[13px] md:block">{name}</span>
+        <span className="grid size-9 place-items-center rounded-full bg-[#e8def7] text-[15px] font-bold text-brand md:size-10">
+          {name.charAt(0).toUpperCase()}
+        </span>
+        <span className="hidden max-w-48 truncate text-[13px] md:block">{name}</span>
+      </Link>
       <form action={signOut}>
         <button
           type="submit"
