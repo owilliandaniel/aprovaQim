@@ -2,11 +2,12 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { BackLink } from "@/components/back-link";
 import { StatusBadge } from "@/components/badges";
+import { CommentThread } from "@/components/comment-thread";
 import { FreshOnNavigate } from "@/components/fresh-on-navigate";
 import { PageHeader } from "@/components/page-header";
 import { ListSkeleton } from "@/components/skeletons";
 import { requireRole } from "@/lib/auth";
-import { formatDateTime } from "@/lib/format";
+import { toThreadComments } from "@/lib/comments";
 import { isUuid } from "@/lib/ids";
 import { signMediaPaths } from "@/lib/storage";
 import { createClient } from "@/lib/supabase/server";
@@ -22,7 +23,7 @@ export default function EditContentPage({ params }: PageProps<"/agencia/conteudo
 }
 
 async function EditContent({ id }: { id: string }) {
-  await requireRole("agency");
+  const user = await requireRole("agency");
   if (!isUuid(id)) notFound();
 
   const supabase = await createClient();
@@ -30,11 +31,10 @@ async function EditContent({ id }: { id: string }) {
     supabase
       .from("posts")
       .select(
-        "id, client_id, type, title, caption, planned_date, status, clients(name), post_media(kind, storage_path, external_url, position), comments(id, body, is_change_request, created_at, author:profiles(full_name, email, role))",
+        "id, client_id, type, title, caption, planned_date, status, clients(name), post_media(kind, storage_path, external_url, position), comments(id, body, is_change_request, created_at, author_id, author:profiles(full_name, email, role))",
       )
       .eq("id", id)
       .order("position", { referencedTable: "post_media" })
-      .order("created_at", { referencedTable: "comments", ascending: false })
       .maybeSingle(),
     supabase.from("clients").select("id, name, active").order("name"),
   ]);
@@ -66,25 +66,10 @@ async function EditContent({ id }: { id: string }) {
         title="Editar conteúdo"
         action={<StatusBadge status={post.status} />}
       />
-      {post.comments.length > 0 && (
+      {/* The client can't see drafts, so a draft only shows the thread if it already has comments. */}
+      {(post.status !== "draft" || post.comments.length > 0) && (
         <section className="mb-4 rounded-2xl border border-line bg-white p-5">
-          <h2 className="mb-3 font-bold">Comentários do conteúdo</h2>
-          <ul className="grid gap-2">
-            {post.comments.map((comment) => (
-              <li
-                key={comment.id}
-                className={`rounded-lg px-3 py-2 ${comment.is_change_request ? "bg-danger-bg text-danger" : "bg-pale"}`}
-              >
-                <div className="text-xs font-semibold">
-                  {comment.author?.full_name || comment.author?.email || "Usuário removido"}
-                  {comment.is_change_request && " · pedido de ajuste"}
-                  {" · "}
-                  {formatDateTime(comment.created_at)}
-                </div>
-                <p className="mt-0.5 whitespace-pre-line text-[13px]">{comment.body}</p>
-              </li>
-            ))}
-          </ul>
+          <CommentThread postId={post.id} comments={toThreadComments(post.comments, user.id)} />
         </section>
       )}
       <FreshOnNavigate>

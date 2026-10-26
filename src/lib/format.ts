@@ -10,6 +10,17 @@ export function formatDate(isoDate: string) {
   return `${day} ${MONTHS[Number(month) - 1]} ${year}`;
 }
 
+// "2026-11-04" -> "4 de novembro de 2026"
+export function formatDateLong(isoDate: string) {
+  const [year, month, day] = isoDate.slice(0, 10).split("-");
+  return `${Number(day)} de ${MONTHS_LONG[Number(month) - 1].toLowerCase()} de ${year}`;
+}
+
+// Current "YYYY-MM" in Brazil time.
+export function currentMonth() {
+  return new Date().toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" }).slice(0, 7);
+}
+
 // Timestamp in Brazil time, e.g. "24/10/2026, 15:33" (servers run in UTC).
 export function formatDateTime(timestamp: string) {
   return new Date(timestamp).toLocaleString("pt-BR", {

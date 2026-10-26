@@ -30,3 +30,8 @@ body {
   outline: 2px solid #9a6cdb;
   outline-offset: 3px;
 }
+
+/* Containers focused by code (like an opened dialog) don't need a ring. */
+[tabindex="-1"]:focus-visible {
+  outline: none;
+}

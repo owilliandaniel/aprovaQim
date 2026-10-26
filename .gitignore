@@ -1,5 +1,6 @@
 # Private docs, references and notes (never commit)
 .docs-aprovaQim/
+.claude/
 references/
 *.reference.*
 
