@@ -30,6 +30,18 @@ export function formatDateTime(timestamp: string) {
   });
 }
 
+// Short age of a timestamp: "agora", "há 5 min", "há 3 h", "há 2 dias", then "24/10".
+export function formatRelative(timestamp: string, now: number) {
+  const minutes = Math.floor((now - new Date(timestamp).getTime()) / 60_000);
+  if (minutes < 1) return "agora";
+  if (minutes < 60) return `há ${minutes} min`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `há ${hours} h`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return days === 1 ? "há 1 dia" : `há ${days} dias`;
+  return new Date(timestamp).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo" });
+}
+
 // "2026-11" -> "Novembro de 2026"
 export function formatMonth(yearMonth: string) {
   const [year, month] = yearMonth.split("-");

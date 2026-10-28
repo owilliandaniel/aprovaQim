@@ -1,8 +1,9 @@
 import { Suspense, type ReactNode } from "react";
-import { Bell, CircleHelp } from "lucide-react";
+import { CircleHelp } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { NavLinks, NavTabs } from "@/components/nav-links";
 import { NavList, type NavItem } from "@/components/nav-list";
+import { NotificationBell, NotificationBellSkeleton } from "@/components/notifications/notification-bell";
 import { UserMenu, UserMenuSkeleton } from "@/components/user-menu";
 
 type AppShellProps = {
@@ -37,13 +38,9 @@ export function AppShell({ root, nav, showHelp = false, children }: AppShellProp
         <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-[#eee8f5] bg-[#faf8fd]/95 px-3 backdrop-blur md:static md:h-[76px] md:gap-5 md:px-8">
           <Brand className="ml-1 text-[21px] md:hidden" />
           <div className="ml-auto flex items-center gap-1 md:gap-4">
-            <button
-              type="button"
-              aria-label="Notificações"
-              className="grid size-11 place-items-center rounded-lg text-ink hover:bg-pale md:size-9"
-            >
-              <Bell size={20} strokeWidth={1.8} />
-            </button>
+            <Suspense fallback={<NotificationBellSkeleton />}>
+              <NotificationBell />
+            </Suspense>
             <Suspense fallback={<UserMenuSkeleton />}>
               <UserMenu />
             </Suspense>
