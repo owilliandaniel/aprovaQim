@@ -5,7 +5,6 @@ import {
   FolderOpen,
   House,
   LayoutDashboard,
-  MessageSquare,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -15,7 +14,6 @@ const icons = {
   dashboard: LayoutDashboard,
   calendar: CalendarDays,
   library: FolderOpen,
-  comments: MessageSquare,
   clients: Building2,
   team: Users,
 } satisfies Record<string, LucideIcon>;

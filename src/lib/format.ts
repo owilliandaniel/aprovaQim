@@ -16,9 +16,16 @@ export function formatDateLong(isoDate: string) {
   return `${Number(day)} de ${MONTHS_LONG[Number(month) - 1].toLowerCase()} de ${year}`;
 }
 
+// Today's "YYYY-MM-DD" in Brazil time.
+export function todayInBrazil() {
+  return new Date().toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
+}
+
+export const PAST_DATE_ERROR = "Escolha hoje ou uma data futura. Conteúdos de dias que já passaram são apagados.";
+
 // Current "YYYY-MM" in Brazil time.
 export function currentMonth() {
-  return new Date().toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" }).slice(0, 7);
+  return todayInBrazil().slice(0, 7);
 }
 
 // Timestamp in Brazil time, e.g. "24/10/2026, 15:33" (servers run in UTC).

@@ -9,6 +9,15 @@ export function CardGridSkeleton({ count = 6 }: { count?: number }) {
   );
 }
 
+export function CalendarSkeleton() {
+  return (
+    <div className="grid gap-4">
+      <div className="h-11 w-64 animate-pulse rounded-lg bg-white" />
+      <div className="h-[420px] animate-pulse rounded-2xl border border-line bg-white md:h-[640px]" />
+    </div>
+  );
+}
+
 export function ListSkeleton({ rows = 4 }: { rows?: number }) {
   return (
     <div className="grid gap-2">

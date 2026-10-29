@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, ImagePlus, Link2, Play, X } from "lucide-react";
 import { FormMessage } from "@/components/form-message";
 import { buttonPrimary, buttonSecondary, inputClass, labelClass, labelTextClass } from "@/components/ui";
+import { PAST_DATE_ERROR, todayInBrazil } from "@/lib/format";
 import { postTypeLabel } from "@/lib/labels";
 import {
   driveFileId,
@@ -37,19 +38,25 @@ type EditorMedia =
   | { key: string; kind: "video_link"; externalUrl: string };
 
 const typeHints: Record<PostType, string> = {
-  feed: "1 imagem ou 1 vídeo.",
-  carousel: "De 2 a 10 mídias, na ordem em que vão aparecer.",
-  reels: "1 vídeo (link do Google Drive).",
-  stories: "Imagens ou vídeos, na ordem dos stories.",
+  feed: "1 imagem ou 1 vídeo, em 1080 × 1350 px (4:5).",
+  carousel: "De 2 a 10 mídias, na ordem em que vão aparecer, em 1080 × 1350 px (4:5).",
+  reels: "1 vídeo (link do Google Drive), em 1080 × 1920 px (9:16).",
+  stories: "Imagens ou vídeos, na ordem dos stories, em 1080 × 1920 px (9:16).",
 };
+
+// Reels and stories are 9:16 (1080 × 1920); feed and carousel posts are 4:5 (1080 × 1350).
+const isVertical = (type: PostType) => type === "reels" || type === "stories";
+const RATIO_TOLERANCE = 0.02;
 
 const extensionFor = (mime: string) => (mime === "image/png" ? "png" : mime === "image/webp" ? "webp" : "jpg");
 
 // Create/edit form: text fields, images uploaded straight to Storage, Drive video links.
-export function PostEditor({ clients, post, defaultClientId }: {
+export function PostEditor({ clients, post, defaultClientId, returnTo }: {
   clients: { id: string; name: string; active: boolean }[];
   post?: EditorPost;
   defaultClientId?: string;
+  // Page to open after saving (the calendar, when the post came from it).
+  returnTo?: string | null;
 }) {
   const router = useRouter();
   const fileInput = useRef<HTMLInputElement>(null);
@@ -116,6 +123,7 @@ export function PostEditor({ clients, post, defaultClientId }: {
     if (!clientId) return setError("Escolha o cliente.");
     if (!title.trim()) return setError("Dê um título ao conteúdo.");
     if (!plannedDate) return setError("Escolha a data de publicação.");
+    if (plannedDate < todayInBrazil()) return setError(PAST_DATE_ERROR);
     if (send && ruleError) return setError(ruleError);
 
     setBusy(send ? "send" : "save");
@@ -154,8 +162,8 @@ export function PostEditor({ clients, post, defaultClientId }: {
         if (result.sent === 0) throw new Error(result.blocked[0]?.reason ?? "Não foi possível enviar para aprovação.");
       }
 
-      // The list reads fresh data on every visit, so no extra refresh is needed.
-      router.push(`/agencia/conteudos?cliente=${clientId}`);
+      // The list and the calendar read fresh data on every visit, so no extra refresh is needed.
+      router.push(returnTo ?? `/agencia/conteudos?cliente=${clientId}`);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Algo deu errado. Tente novamente.");
       setBusy(null);
@@ -225,7 +233,13 @@ export function PostEditor({ clients, post, defaultClientId }: {
           </label>
           <label className={labelClass}>
             <span className={labelTextClass}>Data de publicação</span>
-            <input type="date" value={plannedDate} onChange={(event) => setPlannedDate(event.target.value)} className={inputClass} />
+            <input
+              type="date"
+              value={plannedDate}
+              min={todayInBrazil()}
+              onChange={(event) => setPlannedDate(event.target.value)}
+              className={inputClass}
+            />
           </label>
           <label className={labelClass}>
             <span className={labelTextClass}>Legenda</span>
@@ -250,7 +264,7 @@ export function PostEditor({ clients, post, defaultClientId }: {
             <ol className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {items.map((item, index) => (
                 <li key={item.key} className="relative overflow-hidden rounded-lg border border-line bg-pale">
-                  <MediaPreview item={item} />
+                  <MediaPreview item={item} type={type} />
                   <span className="absolute top-1.5 left-1.5 rounded bg-black/60 px-1.5 text-xs font-semibold text-white">
                     {index + 1}
                   </span>
@@ -331,17 +345,36 @@ export function PostEditor({ clients, post, defaultClientId }: {
   );
 }
 
-function MediaPreview({ item }: { item: EditorMedia }) {
+// Tile in the type's proportion; the whole image shows, and one off that proportion gets a warning.
+function MediaPreview({ item, type }: { item: EditorMedia; type: PostType }) {
+  const [ratio, setRatio] = useState<number | null>(null);
+  const vertical = isVertical(type);
+  const frame = vertical ? "aspect-[9/16]" : "aspect-[4/5]";
+
   if (item.kind === "image") {
+    const offRatio = ratio !== null && Math.abs(ratio - (vertical ? 9 / 16 : 4 / 5)) > RATIO_TOLERANCE;
     return (
-      <div className="relative aspect-square">
-        <Image src={item.previewUrl} alt="" fill unoptimized sizes="200px" className="object-cover" />
+      <div className={`relative ${frame} bg-[#ece6f4]`}>
+        <Image
+          src={item.previewUrl}
+          alt=""
+          fill
+          unoptimized
+          sizes="200px"
+          onLoad={(event) => setRatio(event.currentTarget.naturalWidth / event.currentTarget.naturalHeight)}
+          className="object-contain"
+        />
+        {offRatio && (
+          <span className="absolute inset-x-1.5 bottom-1.5 rounded bg-warn-bg px-1.5 py-0.5 text-center text-[11px] leading-tight font-semibold text-warn">
+            Fora de {vertical ? "9:16" : "4:5"}
+          </span>
+        )}
       </div>
     );
   }
   const fileId = driveFileId(item.externalUrl);
   return (
-    <div className="relative grid aspect-square place-items-center bg-[#23132e]">
+    <div className={`relative grid ${frame} place-items-center bg-[#23132e]`}>
       {fileId && <Image src={driveThumbnailUrl(fileId)} alt="" fill unoptimized sizes="200px" className="object-cover opacity-80" />}
       <span className="relative grid size-10 place-items-center rounded-full bg-[#130b1dba] text-white">
         <Play size={16} fill="currentColor" className="ml-0.5" />

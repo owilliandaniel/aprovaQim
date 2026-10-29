@@ -35,7 +35,7 @@ export function PostCard({ post }: { post: AgencyPost }) {
         {post.clientName && ` · ${post.clientName}`}
       </div>
       <Link href={`/agencia/conteudos/${post.id}`} aria-label={`Editar ${post.title}`}>
-        <MediaThumb media={post.thumb} />
+        <MediaThumb media={post.thumb} type={post.type} />
       </Link>
       <h2 className="mt-2.5 line-clamp-2 font-semibold">{post.title}</h2>
 

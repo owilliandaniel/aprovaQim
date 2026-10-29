@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAgencyAction } from "@/lib/auth";
-import { isYearMonth, monthRange } from "@/lib/format";
+import { isYearMonth, monthRange, PAST_DATE_ERROR, todayInBrazil } from "@/lib/format";
 import { isUuid } from "@/lib/ids";
 import { driveFileId, MEDIA_BUCKET, mediaRuleError } from "@/lib/media";
 import { Constants, type Enums } from "@/lib/supabase/database.types";
@@ -33,6 +33,8 @@ export async function savePost(input: PostInput): Promise<{ ok: true; postId: st
   if (!title || title.length > MAX_TITLE) return { ok: false, error: `O título precisa ter de 1 a ${MAX_TITLE} caracteres.` };
   if (caption.length > MAX_CAPTION) return { ok: false, error: `A legenda pode ter até ${MAX_CAPTION} caracteres.` };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(input.plannedDate)) return { ok: false, error: "Escolha a data de publicação." };
+  // Past days are purged every midnight, so a post can't be planned for one.
+  if (input.plannedDate < todayInBrazil()) return { ok: false, error: PAST_DATE_ERROR };
 
   const supabase = await createClient();
   const fields = { type: input.type, title, caption, planned_date: input.plannedDate };

@@ -4,8 +4,6 @@ import type { NavItem } from "@/components/nav-list";
 const nav: NavItem[] = [
   { href: "/cliente", label: "Conteúdos", icon: "home" },
   { href: "/cliente/calendario", label: "Calendário", icon: "calendar" },
-  { href: "/cliente/biblioteca", label: "Biblioteca", icon: "library" },
-  { href: "/cliente/comentarios", label: "Comentários", icon: "comments" },
 ];
 
 export default function ClientLayout({ children }: LayoutProps<"/cliente">) {

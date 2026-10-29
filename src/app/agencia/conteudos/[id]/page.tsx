@@ -13,16 +13,28 @@ import { signMediaPaths } from "@/lib/storage";
 import { createClient } from "@/lib/supabase/server";
 import { PostEditor, type EditorPost } from "../post-editor";
 
-export default function EditContentPage({ params }: PageProps<"/agencia/conteudos/[id]">) {
+const listBackLink = <BackLink href="/agencia/conteudos">Voltar para os conteúdos</BackLink>;
+
+// The calendar passes its own URL in ?voltar= so the page can return there; anything else is ignored.
+function calendarReturn(value: unknown) {
+  return typeof value === "string" && /^\/agencia\/calendario(\?|$)/.test(value) ? value : null;
+}
+
+export default function EditContentPage({ params, searchParams }: PageProps<"/agencia/conteudos/[id]">) {
+  const returnTo = searchParams.then(({ voltar }) => calendarReturn(voltar));
   return (
     <>
-      <BackLink href="/agencia/conteudos">Voltar para os conteúdos</BackLink>
-      <Suspense fallback={<ListSkeleton rows={3} />}>{params.then(({ id }) => <EditContent id={id} />)}</Suspense>
+      <Suspense fallback={listBackLink}>
+        {returnTo.then((to) => (to ? <BackLink href={to}>Voltar para o calendário</BackLink> : listBackLink))}
+      </Suspense>
+      <Suspense fallback={<ListSkeleton rows={3} />}>
+        {Promise.all([params, returnTo]).then(([{ id }, to]) => <EditContent id={id} returnTo={to} />)}
+      </Suspense>
     </>
   );
 }
 
-async function EditContent({ id }: { id: string }) {
+async function EditContent({ id, returnTo }: { id: string; returnTo: string | null }) {
   const user = await requireRole("agency");
   if (!isUuid(id)) notFound();
 
@@ -73,7 +85,7 @@ async function EditContent({ id }: { id: string }) {
         </section>
       )}
       <FreshOnNavigate>
-        <PostEditor clients={clients ?? []} post={editorPost} />
+        <PostEditor clients={clients ?? []} post={editorPost} returnTo={returnTo} />
       </FreshOnNavigate>
     </>
   );

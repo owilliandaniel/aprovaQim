@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState, useTransition } from "react";
-import { ArrowLeft, CheckCircle2, PencilLine, X } from "lucide-react";
+import { ArrowLeft, CalendarDays, CheckCircle2, PencilLine, X } from "lucide-react";
 import { StatusBadge, TypeBadge } from "@/components/badges";
 import { CommentThread } from "@/components/comment-thread";
 import { CopyButton } from "@/components/copy-button";
@@ -17,6 +17,7 @@ type Props = {
   post: ClientPost;
   // Instagram handle (or company name) shown in the preview.
   handle: string;
+  backLabel: string;
   adjusting: boolean;
   onAdjustingChange: (on: boolean) => void;
   onClose: () => void;
@@ -25,7 +26,7 @@ type Props = {
 
 // Post preview + details: caption, comments and the approve / request-changes decision.
 // Phones get a full-screen sheet; larger screens a two-column dialog like the reference.
-export function PostModal({ post, handle, adjusting, onAdjustingChange, onClose, onDecided }: Props) {
+export function PostModal({ post, handle, backLabel, adjusting, onAdjustingChange, onClose, onDecided }: Props) {
   const dialog = useRef<HTMLElement>(null);
 
   // Lock page scroll while open; Activity runs the cleanup when the page gets hidden.
@@ -80,7 +81,7 @@ export function PostModal({ post, handle, adjusting, onAdjustingChange, onClose,
               onClick={onClose}
               className="mb-4 hidden items-center gap-2.5 text-[13px] font-semibold text-[#4b2580] md:flex"
             >
-              <ArrowLeft size={16} /> Voltar para os conteúdos
+              <ArrowLeft size={16} /> {backLabel}
             </button>
             <PostPreview key={post.id} type={post.type} media={post.media} handle={handle} />
           </div>
@@ -88,12 +89,18 @@ export function PostModal({ post, handle, adjusting, onAdjustingChange, onClose,
           <div className="px-4 py-5 md:overflow-y-auto md:px-6 md:pt-6 md:pb-4">
             <div className="flex flex-wrap items-center gap-2 pr-10 text-xs text-[#83769d]">
               <TypeBadge type={post.type} />
-              <span>{formatDateLong(post.plannedDate)}</span>
               {post.status !== "pending" && <StatusBadge status={post.status} />}
             </div>
             <h2 id="post-modal-title" className="mt-4 mb-3 text-xl font-bold tracking-[-0.6px]">
               {post.title}
             </h2>
+
+            <p className="mb-3 flex items-center gap-3 rounded-[10px] border border-[#e3d6f5] bg-chip px-3.5 py-2.5 text-[#4b2580]">
+              <CalendarDays size={20} className="shrink-0" />
+              <span className="text-sm leading-snug">
+                Data a ser postada: <strong className="font-bold text-brand-dark">{formatDateLong(post.plannedDate)}</strong>
+              </span>
+            </p>
 
             <div className="rounded-[10px] bg-[#f6f2fb] p-3.5 text-[13px] leading-relaxed text-[#514365]">
               <div className="mb-1 flex min-h-8 items-center justify-between gap-2">

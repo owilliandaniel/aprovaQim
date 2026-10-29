@@ -39,6 +39,9 @@ function setQuery(mode: "push" | "replace", changes: Record<string, string | nul
   else window.history.replaceState({ aqDialog: window.history.state?.aqDialog }, "", urlWith(changes));
 }
 
+// Posts opened from the calendar carry ?de=calendario.
+const fromCalendar = () => new URLSearchParams(window.location.search).get("de") === "calendario";
+
 // "3 para aprovar · 2 aprovados · 1 com ajuste solicitado"
 function summary(posts: ClientPost[]) {
   const count = (status: Enums<"post_status">) => posts.filter((post) => post.status === status).length;
@@ -91,15 +94,17 @@ export function ClientBoard({
   const open = (postId: string, adjust = false) => setQuery("push", { conteudo: postId, ajuste: adjust ? "1" : null });
   const setAdjusting = useCallback((on: boolean) => setQuery("replace", { ajuste: on ? "1" : null }), []);
 
-  // Opened from the grid: go back (matches the phone's back gesture). Opened from a link: drop the params.
+  // Opened from the grid or the calendar: go back (matches the phone's back gesture). From a link: drop the params.
   const close = useCallback(() => {
-    if (window.history.state?.aqDialog) window.history.back();
+    if (window.history.state?.aqDialog || fromCalendar()) window.history.back();
     else setQuery("replace", { conteudo: null, ajuste: null });
   }, []);
 
+  // After a decision stay here, where the toast shows, even when the post came from the calendar.
   const decided = useCallback(
     (message: string) => {
-      close();
+      if (fromCalendar()) setQuery("replace", { conteudo: null, ajuste: null, de: null });
+      else close();
       notify(message);
     },
     [close, notify],
@@ -187,6 +192,7 @@ export function ClientBoard({
           key={openPost.id}
           post={openPost}
           handle={handle}
+          backLabel={searchParams.get("de") === "calendario" ? "Voltar para o calendário" : "Voltar para os conteúdos"}
           adjusting={searchParams.get("ajuste") === "1"}
           onAdjustingChange={setAdjusting}
           onClose={close}

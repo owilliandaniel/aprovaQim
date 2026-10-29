@@ -43,7 +43,7 @@ export function ClientPostCard({
       <div className="mb-2 text-xs text-[#796b9b]">{formatDate(post.plannedDate)}</div>
       {/* The click bubbles up to the card; the button makes it reachable by keyboard. */}
       <button type="button" aria-label={`Ver ${post.title}`} className="block w-full rounded-[9px]">
-        <MediaThumb media={thumb} />
+        <MediaThumb media={thumb} type={post.type} />
       </button>
       <h2 className="mt-2.5 line-clamp-1 font-semibold">{post.title}</h2>
       {post.caption && <p className="mt-1 line-clamp-2 text-[13px] leading-[1.45] text-[#1f1630]">{post.caption}</p>}
