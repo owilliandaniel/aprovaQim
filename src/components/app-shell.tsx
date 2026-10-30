@@ -18,7 +18,7 @@ export function AppShell({ root, nav, showHelp = false, children }: AppShellProp
   return (
     <div className="min-h-screen md:grid md:grid-cols-[214px_minmax(0,1fr)]">
       <aside className="hidden border-r border-[#eee8f5] bg-panel px-3 pt-7 pb-5 md:fixed md:inset-y-0 md:left-0 md:flex md:w-[214px] md:flex-col">
-        <Brand className="mx-3 mb-8" />
+        <Brand href={root} className="mx-3 mb-8" />
         {/* Pages with URL params only know the path at request time. */}
         <Suspense fallback={<NavList items={nav} activeHref={null} />}>
           <NavLinks items={nav} root={root} />
@@ -36,7 +36,7 @@ export function AppShell({ root, nav, showHelp = false, children }: AppShellProp
 
       <main className="min-w-0 md:col-start-2">
         <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-[#eee8f5] bg-[#faf8fd]/95 px-3 backdrop-blur md:static md:h-[76px] md:gap-5 md:px-8">
-          <Brand className="ml-1 text-[21px] md:hidden" />
+          <Brand href={root} className="ml-1 text-[21px] md:hidden" />
           <div className="ml-auto flex items-center gap-1 md:gap-4">
             <Suspense fallback={<NotificationBellSkeleton />}>
               <NotificationBell />
