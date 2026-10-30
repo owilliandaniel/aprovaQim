@@ -284,17 +284,22 @@ export function PostEditor({ clients, post, defaultClientId, returnTo }: {
             </ol>
           )}
 
-          <input
-            ref={fileInput}
-            type="file"
-            accept={IMAGE_TYPES.join(",")}
-            multiple
-            onChange={(event) => addFiles(event.target.files)}
-            className="hidden"
-          />
-          <button type="button" onClick={() => fileInput.current?.click()} className={`${buttonSecondary} border-dashed`}>
-            <ImagePlus size={18} /> Adicionar imagens
-          </button>
+          {/* Reels are video only. */}
+          {type !== "reels" && (
+            <>
+              <input
+                ref={fileInput}
+                type="file"
+                accept={IMAGE_TYPES.join(",")}
+                multiple
+                onChange={(event) => addFiles(event.target.files)}
+                className="hidden"
+              />
+              <button type="button" onClick={() => fileInput.current?.click()} className={`${buttonSecondary} border-dashed`}>
+                <ImagePlus size={18} /> Adicionar imagens
+              </button>
+            </>
+          )}
 
           <div className="grid gap-1.5">
             <div className="flex gap-2">
