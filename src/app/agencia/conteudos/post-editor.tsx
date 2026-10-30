@@ -324,7 +324,7 @@ export function PostEditor({ clients, post, defaultClientId, returnTo }: {
       <FormMessage error={error} />
 
       {/* On phones the actions stay pinned to the bottom of the screen. */}
-      <div className="sticky bottom-0 z-10 -mx-4 flex gap-2 border-t border-line bg-canvas/95 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur md:static md:mx-0 md:justify-end md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none">
+      <div className="sticky bottom-0 z-10 -mx-4 flex flex-wrap gap-2 border-t border-line bg-canvas/95 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur md:static md:mx-0 md:justify-end md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none">
         <button type="button" onClick={() => submit(false)} disabled={busy !== null} className={`${buttonSecondary} flex-1 md:flex-none`}>
           {busy === "save" ? "Salvando..." : canSend ? "Salvar rascunho" : "Salvar alterações"}
         </button>

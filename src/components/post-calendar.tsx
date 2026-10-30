@@ -116,7 +116,7 @@ export function PostCalendar({
   return (
     <div className="grid grid-cols-1 gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-1">
+        <div className="flex flex-wrap items-center gap-1">
           <button type="button" onClick={goToday} className={`${buttonSecondary} ${buttonSmall} mr-1`}>
             Hoje
           </button>
@@ -126,7 +126,7 @@ export function PostCalendar({
           <button type="button" onClick={() => goTo(shiftMonth(month, 1))} aria-label="Próximo mês" className={arrowClass}>
             <ChevronRight size={20} />
           </button>
-          <h2 className="ml-1 text-lg font-bold tracking-[-0.4px] md:text-xl">{formatMonth(month)}</h2>
+          <h2 className="ml-1 text-lg font-bold tracking-[-0.4px] whitespace-nowrap md:text-xl">{formatMonth(month)}</h2>
         </div>
         {toolbar}
       </div>

@@ -124,7 +124,7 @@ export function ClientBoard({
   }
 
   return (
-    <div className="grid gap-4">
+    <div className="grid grid-cols-1 gap-4">
       <div className="flex flex-col gap-3 md:flex-row-reverse md:items-center md:justify-between">
         <label className="relative block md:w-80">
           <CalendarDays size={18} className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-brand" />

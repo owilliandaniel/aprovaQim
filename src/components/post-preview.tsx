@@ -62,7 +62,7 @@ function MediaSlider({ items, variant, handle }: { items: PreviewMedia[]; varian
       <div
         className={
           tall
-            ? "relative mx-auto aspect-[9/16] h-[min(60dvh,560px)] max-w-full overflow-hidden rounded-[10px] bg-[#120a1a] md:h-[min(64vh,620px)]"
+            ? "relative mx-auto aspect-[9/16] h-[min(60dvh,560px)] max-w-full overflow-hidden rounded-[10px] bg-[#120a1a] has-[iframe]:min-w-[min(320px,100%)] md:h-[min(64vh,620px)]"
             : "relative aspect-[4/5] overflow-hidden rounded-lg bg-[#f1ecf7]"
         }
       >
@@ -80,7 +80,7 @@ function MediaSlider({ items, variant, handle }: { items: PreviewMedia[]; varian
               role="group"
               aria-roledescription="slide"
               aria-label={`${i + 1} de ${items.length}`}
-              className="relative h-full w-full shrink-0 snap-center snap-always"
+              className="relative h-full w-full shrink-0 snap-center snap-always overflow-hidden"
             >
               {item.kind === "image" ? (
                 <Image src={item.url} alt="" fill unoptimized sizes="(min-width: 768px) 420px, 100vw" className="object-contain" />
@@ -152,6 +152,7 @@ function Arrow({ side, onClick }: { side: "left" | "right"; onClick: () => void 
 }
 
 // Drive thumbnail + play button; the Drive player only loads after a tap.
+// The player's layout breaks under 320px, so it never gets less: tighter slots crop it evenly.
 function VideoSlide({ driveId, active }: { driveId: string; active: boolean }) {
   const [playing, setPlaying] = useState(false);
   const [thumbFailed, setThumbFailed] = useState(false);
@@ -163,7 +164,7 @@ function VideoSlide({ driveId, active }: { driveId: string; active: boolean }) {
         title="Vídeo do conteúdo"
         allow="autoplay; fullscreen"
         allowFullScreen
-        className="absolute inset-0 size-full border-0 bg-black"
+        className="absolute inset-y-0 left-1/2 h-full w-full min-w-80 -translate-x-1/2 border-0 bg-black"
       />
     );
   }

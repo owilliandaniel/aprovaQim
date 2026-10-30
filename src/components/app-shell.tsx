@@ -16,9 +16,9 @@ type AppShellProps = {
 // Desktop: sidebar + top bar. Mobile: compact sticky top bar + bottom tab bar.
 export function AppShell({ root, nav, showHelp = false, children }: AppShellProps) {
   return (
-    <div className="min-h-screen md:grid md:grid-cols-[214px_minmax(0,1fr)]">
+    <div className="min-h-dvh md:grid md:grid-cols-[214px_minmax(0,1fr)]">
       <aside className="hidden border-r border-[#eee8f5] bg-panel px-3 pt-7 pb-5 md:fixed md:inset-y-0 md:left-0 md:flex md:w-[214px] md:flex-col">
-        <Brand href={root} className="mx-3 mb-8" />
+        <Brand href={root} className="mx-3 mb-8 text-[26px]" />
         {/* Pages with URL params only know the path at request time. */}
         <Suspense fallback={<NavList items={nav} activeHref={null} />}>
           <NavLinks items={nav} root={root} />

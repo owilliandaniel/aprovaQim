@@ -15,7 +15,7 @@ export async function UserMenu() {
         href={`${homePathFor(user.role)}/conta`}
         title="Minha conta"
         aria-label="Minha conta"
-        className="flex min-h-11 items-center gap-3 rounded-full pr-1 hover:bg-pale md:pr-3"
+        className="flex min-h-11 min-w-11 items-center justify-center gap-3 rounded-full hover:bg-pale md:justify-start md:pr-3"
       >
         <span className="grid size-9 place-items-center rounded-full bg-[#e8def7] text-[15px] font-bold text-brand md:size-10">
           {name.charAt(0).toUpperCase()}
