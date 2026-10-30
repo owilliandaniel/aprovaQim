@@ -1,9 +1,18 @@
 import { KeyRound } from "lucide-react";
 import { CopyButton } from "@/components/copy-button";
 
+const SITE_URL = "https://aprovaqim.vercel.app/";
+
 // Shows a login's email and password once, so the agency can send them to the person.
 export function CredentialsCard({ email, password, title }: { email: string; password: string; title: string }) {
-  const message = `Acesso ao AprovaQim\nE-mail: ${email}\nSenha: ${password}`;
+  const message = [
+    SITE_URL,
+    "Acesso ao AprovaQim",
+    `E-mail: ${email}`,
+    `Senha: ${password}`,
+    "",
+    "** Altere sua senha após o primeiro login **",
+  ].join("\n");
   return (
     <div className="rounded-xl border border-ok/30 bg-ok-bg p-4 text-ok">
       <div className="flex items-center gap-2 font-bold">
