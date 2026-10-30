@@ -26,7 +26,7 @@ const NO_KEY_ERROR = "Falta configurar a SUPABASE_SECRET_KEY no servidor para ge
 
 // Error result that keeps the typed values.
 function failWith(formData: FormData, error: string): AccessFormState {
-  const keys = ["name", "instagram", "fullName", "email", "password"];
+  const keys = ["name", "instagram", "phone", "companyEmail", "fullName", "email", "password"];
   return { error, values: Object.fromEntries(keys.map((key) => [key, String(formData.get(key) ?? "")])) };
 }
 
@@ -52,7 +52,10 @@ export async function createClientWithAccess(_prev: AccessFormState, formData: F
   await requireAgencyAction();
   const name = String(formData.get("name") ?? "").trim();
   const handle = String(formData.get("instagram") ?? "").trim().replace(/^@+/, "");
+  const phone = String(formData.get("phone") ?? "").trim();
+  const companyEmail = String(formData.get("companyEmail") ?? "").trim().toLowerCase();
   if (!name) return failWith(formData, "Informe o nome da empresa.");
+  if (companyEmail && !isValidEmail(companyEmail)) return failWith(formData, "Informe um e-mail da empresa válido.");
 
   const access = readAccessFields(formData);
   if ("error" in access) return failWith(formData, access.error);
@@ -60,7 +63,7 @@ export async function createClientWithAccess(_prev: AccessFormState, formData: F
   const supabase = await createClient();
   const { data: client, error } = await supabase
     .from("clients")
-    .insert({ name, instagram_handle: handle ? `@${handle}` : null })
+    .insert({ name, instagram_handle: handle ? `@${handle}` : null, phone: phone || null, email: companyEmail || null })
     .select("id")
     .single();
   if (error || !client) return failWith(formData, "Não foi possível cadastrar o cliente.");

@@ -7,10 +7,12 @@ import { FormMessage } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 import { buttonDanger, buttonPrimary, inputClass, labelClass, labelTextClass } from "@/components/ui";
 
-export function EditClientForm({ action, name, instagram }: {
+export function EditClientForm({ action, name, instagram, phone, email }: {
   action: (prev: AccessFormState, formData: FormData) => Promise<AccessFormState>;
   name: string;
   instagram: string;
+  phone: string;
+  email: string;
 }) {
   const [state, formAction] = useActionState(action, {});
   return (
@@ -22,6 +24,29 @@ export function EditClientForm({ action, name, instagram }: {
       <label className={labelClass}>
         <span className={labelTextClass}>Instagram</span>
         <input name="instagram" defaultValue={state.values?.instagram ?? instagram} placeholder="@empresa" className={inputClass} />
+      </label>
+      <label className={labelClass}>
+        <span className={labelTextClass}>Telefone</span>
+        <input
+          name="phone"
+          type="tel"
+          autoComplete="off"
+          maxLength={30}
+          defaultValue={state.values?.phone ?? phone}
+          placeholder="(00) 00000-0000"
+          className={inputClass}
+        />
+      </label>
+      <label className={labelClass}>
+        <span className={labelTextClass}>E-mail</span>
+        <input
+          name="companyEmail"
+          type="email"
+          autoComplete="off"
+          defaultValue={state.values?.companyEmail ?? email}
+          placeholder="contato@empresa.com"
+          className={inputClass}
+        />
       </label>
       <FormMessage error={state.error} success={state.success} />
       <SubmitButton className={`${buttonPrimary} justify-self-start`} pendingLabel="Salvando...">

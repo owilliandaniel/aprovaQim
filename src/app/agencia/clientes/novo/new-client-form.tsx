@@ -50,6 +50,29 @@ function Form({ onReset }: { onReset: () => void }) {
           <span className={labelTextClass}>Instagram (opcional)</span>
           <input name="instagram" placeholder="@empresa" defaultValue={state.values?.instagram} className={inputClass} />
         </label>
+        <label className={labelClass}>
+          <span className={labelTextClass}>Telefone (opcional)</span>
+          <input
+            name="phone"
+            type="tel"
+            autoComplete="off"
+            maxLength={30}
+            placeholder="(00) 00000-0000"
+            defaultValue={state.values?.phone}
+            className={inputClass}
+          />
+        </label>
+        <label className={labelClass}>
+          <span className={labelTextClass}>E-mail da empresa (opcional)</span>
+          <input
+            name="companyEmail"
+            type="email"
+            autoComplete="off"
+            placeholder="contato@empresa.com"
+            defaultValue={state.values?.companyEmail}
+            className={inputClass}
+          />
+        </label>
       </fieldset>
 
       <fieldset className="grid gap-3">

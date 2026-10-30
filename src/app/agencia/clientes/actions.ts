@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAgencyAction } from "@/lib/auth";
-import { deleteAccount } from "@/lib/accounts";
+import { deleteAccount, isValidEmail } from "@/lib/accounts";
 import { MEDIA_BUCKET } from "@/lib/media";
 import { hasAdminKey } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -13,13 +13,18 @@ export async function updateClient(clientId: string, _prev: AccessFormState, for
   await requireAgencyAction();
   const name = String(formData.get("name") ?? "").trim();
   const handle = String(formData.get("instagram") ?? "").trim().replace(/^@+/, "");
-  const values = { name: String(formData.get("name") ?? ""), instagram: String(formData.get("instagram") ?? "") };
+  const phone = String(formData.get("phone") ?? "").trim();
+  const email = String(formData.get("companyEmail") ?? "").trim().toLowerCase();
+  const values = Object.fromEntries(
+    ["name", "instagram", "phone", "companyEmail"].map((key) => [key, String(formData.get(key) ?? "")]),
+  );
   if (!name) return { error: "Informe o nome da empresa.", values };
+  if (email && !isValidEmail(email)) return { error: "Informe um e-mail da empresa válido.", values };
 
   const supabase = await createClient();
   const { error } = await supabase
     .from("clients")
-    .update({ name, instagram_handle: handle ? `@${handle}` : null })
+    .update({ name, instagram_handle: handle ? `@${handle}` : null, phone: phone || null, email: email || null })
     .eq("id", clientId);
   if (error) return { error: "Não foi possível salvar.", values };
 

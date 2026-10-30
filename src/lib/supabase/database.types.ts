@@ -18,26 +18,32 @@ export type Database = {
         Row: {
           active: boolean
           created_at: string
+          email: string | null
           id: string
           instagram_handle: string | null
           logo_path: string | null
           name: string
+          phone: string | null
         }
         Insert: {
           active?: boolean
           created_at?: string
+          email?: string | null
           id?: string
           instagram_handle?: string | null
           logo_path?: string | null
           name: string
+          phone?: string | null
         }
         Update: {
           active?: boolean
           created_at?: string
+          email?: string | null
           id?: string
           instagram_handle?: string | null
           logo_path?: string | null
           name?: string
+          phone?: string | null
         }
         Relationships: []
       }

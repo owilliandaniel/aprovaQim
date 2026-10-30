@@ -31,7 +31,7 @@ async function ClientDetail({ id }: { id: string }) {
 
   const supabase = await createClient();
   const [{ data: client }, { data: accesses }] = await Promise.all([
-    supabase.from("clients").select("id, name, instagram_handle, active").eq("id", id).maybeSingle(),
+    supabase.from("clients").select("id, name, instagram_handle, phone, email, active").eq("id", id).maybeSingle(),
     supabase.from("profiles").select("id, email, full_name").eq("client_id", id).order("created_at"),
   ]);
   if (!client) notFound();
@@ -60,6 +60,8 @@ async function ClientDetail({ id }: { id: string }) {
             action={updateClient.bind(null, client.id)}
             name={client.name}
             instagram={client.instagram_handle ?? ""}
+            phone={client.phone ?? ""}
+            email={client.email ?? ""}
           />
         </section>
 
